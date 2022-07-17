@@ -1,0 +1,183 @@
+bring up command prompt and go to folder.
+type npm init and name: reactexpress, entry point: server.js, license: MIT.
+type npm install express concurrently
+type npm install nodemon    (this allows server to auto restart when changes made)
+                            (I did not do this line)
+modified package.json to
+
+  "scripts": {
+    "start": "node server.js"
+  },
+
+made file server.js with code in it.
+
+type npm install create-react-app  (maybe add -g to install globally???)
+
+related to the -g option is   npm list -g   which will show you where
+and which global packages are installed.
+
+type npx create-react-app client  (not sure why npx???)
+
+created a client folder and files and folders related to react.
+
+modify the client package.json to
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "proxy": "http://localhost:5000"
+
+The above defines the backend server url as a proxy.  Now can requests
+to the backend server without having to put the url for a fetch request.
+
+now go back to top level folder and type   node server.js
+in 2nd command prompt go to client folder and type    npm start
+Web page of react should come up.
+
+==========
+go to client/src and create folder called components and inside components,
+create a new folder called customers
+
+in the customers folder add the customers.js and customers.css
+0000000000000customers.js0000000000000000000000
+import React, { Component } from 'react';
+import './customers.css';
+
+class Customers extends Component {
+  render() {
+
+    return (
+      <div>
+        <h2>Customers</h2> 
+      </div>
+    );
+  }
+}
+
+export default Customers;
+00000000000000000000000000000000000
+added to App.js in client/src
+import Customers from './components/customers/customers';
+and modified to
+        <Customers />
+
+
+
+now go back to top level folder and type   node server.js
+in 2nd command prompt go to client folder and type    npm start
+Web page of react should come up and the word Customers should be seen.
+
+==========
+now mod customers.js to
+000000000000000000000000000000
+import React, { Component } from 'react';
+import './customers.css';
+
+class Customers extends Component {
+
+  constructor() {
+    super();
+    this.state = {
+      customers: []
+    }
+  }
+
+  componentDidMount() {
+    fetch('/api/customers')
+    .then(res => res.json())
+    .then(customers => this.setState({customers}, () => console.log('Customers fetched...',customers)));
+  }
+  render() {
+
+    return (
+      <div>
+        <h2>Customers</h2> 
+        <ul>
+          {this.state.customers.map(customer =>
+            <li key={customer.id}>{customer.firstName} {customer.lastName}</li>
+            )}
+        </ul>
+      </div>
+    );
+  }
+}
+
+export default Customers;
+
+0000000000000000000000000
+
+now go back to top level folder and type   node server.js
+in 2nd command prompt go to client folder and type    npm start
+Web page of react should come up and the list of customers should be seen.
+
+===============
+
+modify the top folders package.json to
+
+  "scripts": {
+    "start": "node server.js",
+    "client": "npm start --prefix client",
+    "dev": "concurrently \"npm run start\" \"npm run client\""
+  },
+
+
+now go back to top level folder and type   npm run dev
+Web page of react should come up and the list of customers should be seen.
+
+
+
+
+000000000000000000000000000000000000000000000
+Deploy the React Web App to a real server.
+
+Remove node_modules folders.
+Upload with github desktop to github.
+Download using   git clone https://github.com/????.git   to server.
+
+modify the file server.js by adding
+
+/////////////////below//////////////////////
+const path = require('path');
+
+app.use(express.static(path.join(__dirname,'client','build')));
+
+app.get('/',(req,res) => {
+  res.sendFile(path.join(__dirname,'client','build','index.html'));
+});
+
+
+
+const PORT = process.env.PORT || 3003;   //3003 or whatever you want
+
+//////////////////above//////////////////////
+
+
+at root folder of project type    npm install
+go to client folder and type      npm install
+go to the client folder and type   npm run build
+the above will create the production version of the React client.
+now you can start the web app by typing in     node server.js
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
